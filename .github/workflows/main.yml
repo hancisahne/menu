@@ -1,0 +1,30 @@
+name: job schedule based on sahne
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  schedule:
+    - cron: '00 21 * * 4,5'
+    - cron: '00 21 * * 6,0'
+    - cron: '00 15 * * *'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: rename file for sahne
+        if: github.event.schedule != '00 15 * * *'
+        run: |
+          cp index_sahne.html index.html
+          git add index.html
+          git commit -m "Rename index_sahne.html to index.html on schedule"
+          git push
+      - name: rename file for normal
+        if: github.event.schedule == '00 15 * * *'
+        run: |
+          cp index_normal.html index.html
+          git add index.html
+          git commit -m "Rename index_normal.html to index.html on schedule"
+          git push
